@@ -9,7 +9,7 @@
             isDisplayed.set(!$isDisplayed);
             currentDay.set(0);
         } else {
-            currentDay.update((day) => day);
+            currentDay.update(() => day);
         }
     }
 </script>

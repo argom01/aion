@@ -36,7 +36,7 @@
             />
         {/each}
     </div>
-    <DayDetail/>
+    <DayDetail events={days}/>
 {:catch error}
     <p>{error}</p>
 {/await}

@@ -1,9 +1,19 @@
 <script lang="ts">
-    import type { TEventResponse } from "src/types/event.types";
+    import { currentDay, isDisplayed } from "$lib/stores/currentDay";
+    export let events: any = [];
 
-    export let events: Array<TEventResponse> = [];
+    let currentEvents: any = [];
+    let displayed = $isDisplayed
+    if (displayed) {
+        currentEvents = events[$currentDay - 1][1];
+        console.log(currentEvents)
+    }
 </script>
 
-{#each events as event}
-    <span>{event.title}</span>
-{/each}
+{#if $isDisplayed}
+    {#each currentEvents as event}
+        <div>
+            <span>{event.title}</span>
+        </div>
+    {/each}
+{/if}
