@@ -1,9 +1,9 @@
-import type { RequestHandler } from '@sveltejs/kit';
-import type { TEventQueryOutput, TEventResponse } from 'src/types/event.types';
+import type { RequestHandler } from "@sveltejs/kit";
+import type { TEventQueryOutput, TEventResponse } from "src/types/event.types";
 
-import { error, json } from '@sveltejs/kit';
-import prisma from '$lib/prisma';
-import { prismaErrorHandler } from '$lib/prismaErrorHandler';
+import { error, json } from "@sveltejs/kit";
+import prisma from "$lib/prisma";
+import { prismaErrorHandler } from "$lib/prismaErrorHandler";
 
 export const GET: RequestHandler = async ({ params }) => {
     try {
@@ -24,10 +24,13 @@ export const GET: RequestHandler = async ({ params }) => {
         prismaErrorHandler(e);
         throw error(500);
     }
+};
 
-}
-
-const arrangeEvents = (events: TEventResponse[], month: number, year: number) => {
+const arrangeEvents = (
+    events: TEventResponse[],
+    month: number,
+    year: number
+) => {
     const eventsByDay = new Map();
     const h = new Date();
     h.setMonth(month);
@@ -39,13 +42,13 @@ const arrangeEvents = (events: TEventResponse[], month: number, year: number) =>
         h.setDate(d + 1);
     }
 
-    events.forEach(e => {
+    events.forEach((e) => {
         const d = e.beginning.getDate();
         eventsByDay.set(d, [...eventsByDay.get(d), e]);
     });
 
     return Object.fromEntries(eventsByDay);
-}
+};
 
 const handlePeriodicEvents = (
     events: TEventQueryOutput[],
@@ -56,6 +59,7 @@ const handlePeriodicEvents = (
     events.forEach((e) => {
         if (!e.isPeriodical) {
             const event: TEventResponse = {
+                id: e.id,
                 beginning: e.beginTime,
                 ending: e.endTime,
                 title: e.title,
@@ -64,7 +68,7 @@ const handlePeriodicEvents = (
             };
             response.push(event);
         } else {
-            let beginning = new Date(e.beginTime);
+            const beginning = new Date(e.beginTime);
             const upperDate = new Date();
             upperDate.setFullYear(year);
             upperDate.setMonth(month + 1);
@@ -76,18 +80,19 @@ const handlePeriodicEvents = (
             lowerDate.setDate(1);
             lowerDate.setHours(0, 0, 0, 0);
 
-            let dateBoundary = !!e.dateBoundary ? e.dateBoundary : upperDate;
+            const dateBoundary = !e.dateBoundary ? upperDate : e.dateBoundary;
 
             if (dateBoundary >= upperDate) {
                 while (beginning <= dateBoundary && beginning < upperDate) {
                     if (beginning >= lowerDate) {
                         const event: TEventResponse = {
+                            id: e.id,
                             beginning: new Date(beginning),
                             ending: !e.endTime
                                 ? null
                                 : new Date(
-                                    e.endTime.setDate(beginning.getDate())
-                                ),
+                                      e.endTime.setDate(beginning.getDate())
+                                  ),
                             title: e.title,
                             description: e.description,
                             place: e.place,

@@ -1,15 +1,14 @@
 <script lang="ts">
-    import { currentDay, isDisplayed } from "$lib/stores/currentDay";
+    import { selectedDay } from "$lib/stores/calendarStore"
     export let day: number;
     export let busy: boolean = false;
     export let id: string;
 
     function toggleDay() {
-        if ($currentDay === day) {
-            isDisplayed.set(!$isDisplayed);
-            currentDay.set(0);
+        if ($selectedDay === day) {
+            selectedDay.selectDay(null);
         } else {
-            currentDay.update(() => day);
+            selectedDay.selectDay(day);
         }
     }
 </script>

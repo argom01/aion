@@ -27,6 +27,7 @@ export type TEditEventData = {
 };
 
 export type TEventResponse = {
+    id: string;
     beginning: Date;
     ending: Date | null;
     title: string;
@@ -35,6 +36,7 @@ export type TEventResponse = {
 };
 
 export type TEventQueryOutput = {
+    id: string;
     beginTime: Date;
     endTime: Date | null;
     title: string;
