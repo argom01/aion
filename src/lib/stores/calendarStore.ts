@@ -1,37 +1,30 @@
-import { writable } from "svelte/store";
+import { writable, readable, derived } from "svelte/store";
+
+const today = new Date();
 
 const createSelectedMonth = () => {
-    const today = new Date();
-    const fetchMonthData = async (m: number, y: number) => {
-        const response = await fetch(
-            `http://localhost:5173/api/get-events/${m + 1}/${y}`
-        );
-
-        if (response.status === 200) {
-            const data = await response.json();
-            today.setMonth(m);
-            today.setFullYear(y);
-            console.log(data);
-            return data;
-        } else {
-            throw new Error(response.statusText);
-        }
-    };
-
-    const { subscribe, set } = writable(
-        fetchMonthData(today.getMonth(), today.getFullYear())
-    );
-
+    const { subscribe, update } = writable(today);
     return {
         subscribe,
-        fetchMonth: (m: number, y: number) => set(fetchMonthData(m, y)),
+        selectMonth: (m: number, y: number) =>
+            update((t) => {
+                t.setMonth(m);
+                t.setFullYear(y);
+                return t;
+            }),
         incrementMonth: () =>
-            set(fetchMonthData(today.getMonth() + 1, today.getFullYear())),
+            update((t) => {
+                t.setMonth(t.getMonth() + 1);
+                return t;
+            }),
         decrementMonth: () =>
-            set(fetchMonthData(today.getMonth() - 1, today.getFullYear())),
+            update((t) => {
+                t.setMonth(t.getMonth() - 1);
+                return t;
+            }),
     };
 };
-export const selectedMonth = createSelectedMonth()
+export const selectedMonth = createSelectedMonth();
 
 const createSelectedDay = () => {
     const { subscribe, set } = writable<null | number>(null);
@@ -42,3 +35,58 @@ const createSelectedDay = () => {
     };
 };
 export const selectedDay = createSelectedDay();
+
+export const selectedMonthData = derived(selectedMonth, ($selectedMonth) => {
+    const fetchMonthData = async (m: number, y: number) => {
+        selectedDay.selectDay(null);
+        const response = await fetch(
+            `http://localhost:5173/api/get-events/${m + 1}/${y}`
+        );
+
+        if (response.status === 200) {
+            const data = await response.json();
+            today.setMonth(m);
+            today.setFullYear(y);
+            return data;
+        } else {
+            throw new Error(response.statusText);
+        }
+    };
+
+    return fetchMonthData(
+        $selectedMonth.getMonth(),
+        $selectedMonth.getFullYear()
+    );
+});
+
+// const createSelectedMonthData = () => {
+//     const fetchMonthData = async (m: number, y: number) => {
+//         selectedDay.selectDay(null);
+//         const response = await fetch(
+//             `http://localhost:5173/api/get-events/${m + 1}/${y}`
+//         );
+//
+//         if (response.status === 200) {
+//             const data = await response.json();
+//             today.setMonth(m);
+//             today.setFullYear(y);
+//             return data;
+//         } else {
+//             throw new Error(response.statusText);
+//         }
+//     };
+//
+//     const { subscribe, set } = writable(
+//         fetchMonthData(today.getMonth(), today.getFullYear())
+//     );
+//
+//     return {
+//         subscribe,
+//         fetchMonth: (m: number, y: number) => set(fetchMonthData(m, y)),
+//         incrementMonth: () =>
+//             set(fetchMonthData(today.getMonth() + 1, today.getFullYear())),
+//         decrementMonth: () =>
+//             set(fetchMonthData(today.getMonth() - 1, today.getFullYear())),
+//     };
+// };
+// export const selectedMonthData = createSelectedMonthData();

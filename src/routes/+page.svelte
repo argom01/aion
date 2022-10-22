@@ -1,12 +1,8 @@
 <script lang="ts">
     import Calendar from "$lib/components/calendar.svelte";
-    import { selectedMonth } from "$lib/stores/calendarStore";
-
-    let currentDate = new Date();
-    $: month = currentDate.getMonth();
-    $: year = currentDate.getFullYear();
-    $: monthString = currentDate.toLocaleString("default", { month: "long" });
-
+    import {
+        selectedMonth,
+    } from "$lib/stores/calendarStore";
 </script>
 
 <svelte:head>
@@ -17,8 +13,8 @@
 
 <button on:click={selectedMonth.decrementMonth}> Poprzedni miesiąc </button>
 <p>
-    {monthString}
-    {year}
+    {$selectedMonth.toLocaleString("default", { month: "long" })}
+    {$selectedMonth.getFullYear()}
 </p>
 <button on:click={selectedMonth.incrementMonth}> Następny miesiąc </button>
-<Calendar {month} {year} />
+<Calendar />

@@ -1,19 +1,16 @@
 <script lang="ts">
     import CalendarCell from "./calendarCell.svelte";
     import DayDetail from "./dayDetail.svelte";
-    import { selectedDay, selectedMonth } from "$lib/stores/calendarStore"
-
-    export let month: number;
-    export let year: number;
+    import { selectedDay, selectedMonthData, selectedMonth } from "$lib/stores/calendarStore";
 </script>
 
-{#await $selectedMonth}
+{#await $selectedMonthData}
     <p>Loading</p>
 {:then days}
-    <div class="calendar-board" id={`calendar-board_${month}`}>
+    <div class="calendar-board" id={`calendar-board_${$selectedMonth.getMonth()}`}>
         {#each Object.entries(days) as [day, events]}
             <CalendarCell
-                {day}
+                day={parseInt(day)}
                 busy={events.length !== 0}
                 id={`cal-cell_${day}`}
             />
