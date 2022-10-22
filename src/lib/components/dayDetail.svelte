@@ -1,6 +1,5 @@
 <script lang="ts">
     export let events: any = [];
-
 </script>
 
 <div class="day-detail-list">

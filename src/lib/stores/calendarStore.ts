@@ -59,34 +59,14 @@ export const selectedMonthData = derived(selectedMonth, ($selectedMonth) => {
     );
 });
 
-// const createSelectedMonthData = () => {
-//     const fetchMonthData = async (m: number, y: number) => {
-//         selectedDay.selectDay(null);
-//         const response = await fetch(
-//             `http://localhost:5173/api/get-events/${m + 1}/${y}`
-//         );
-//
-//         if (response.status === 200) {
-//             const data = await response.json();
-//             today.setMonth(m);
-//             today.setFullYear(y);
-//             return data;
-//         } else {
-//             throw new Error(response.statusText);
-//         }
-//     };
-//
-//     const { subscribe, set } = writable(
-//         fetchMonthData(today.getMonth(), today.getFullYear())
-//     );
-//
-//     return {
-//         subscribe,
-//         fetchMonth: (m: number, y: number) => set(fetchMonthData(m, y)),
-//         incrementMonth: () =>
-//             set(fetchMonthData(today.getMonth() + 1, today.getFullYear())),
-//         decrementMonth: () =>
-//             set(fetchMonthData(today.getMonth() - 1, today.getFullYear())),
-//     };
-// };
-// export const selectedMonthData = createSelectedMonthData();
+export const selectedDayData = derived(
+    [selectedMonthData, selectedDay],
+    ([$selectedMonthData, $selectedDay], set) => {
+        if ($selectedDay) {
+            $selectedMonthData
+                .then((e) => set(e[$selectedDay]))
+                .catch(() => set([]));
+        }
+    },
+    []
+);
