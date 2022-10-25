@@ -44,7 +44,11 @@ const arrangeEvents = (
 
     events.forEach((e) => {
         const d = e.beginning.getDate();
-        eventsByDay.set(d, [...eventsByDay.get(d), e]);
+        const eventsSoFar = eventsByDay.get(d);
+        if (!eventsSoFar) {
+            throw new Error("Unreachable");
+        }
+        eventsByDay.set(d, [...eventsSoFar, e]);
     });
 
     return Object.fromEntries(eventsByDay);

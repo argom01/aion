@@ -1,3 +1,4 @@
+import type { TEventResponse } from "src/types/event.types";
 import { writable, derived } from "svelte/store";
 
 const today = new Date();
@@ -44,7 +45,8 @@ export const selectedMonthData = derived(selectedMonth, ($selectedMonth) => {
         );
 
         if (response.status === 200) {
-            const data = await response.json();
+            const data: { [k: string]: TEventResponse[] } =
+                await response.json();
             today.setMonth(m);
             today.setFullYear(y);
             return data;
@@ -61,7 +63,7 @@ export const selectedMonthData = derived(selectedMonth, ($selectedMonth) => {
 
 export const selectedDayData = derived(
     [selectedMonthData, selectedDay],
-    ([$selectedMonthData, $selectedDay], set) => {
+    ([$selectedMonthData, $selectedDay], set: (value: TEventResponse[]) => void) => {
         if ($selectedDay) {
             $selectedMonthData
                 .then((e) => set(e[$selectedDay]))
