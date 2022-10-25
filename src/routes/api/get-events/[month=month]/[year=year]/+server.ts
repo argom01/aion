@@ -31,7 +31,7 @@ const arrangeEvents = (
     month: number,
     year: number
 ) => {
-    const eventsByDay = new Map();
+    const eventsByDay = new Map<number, Array<TEventResponse>>();
     const h = new Date();
     h.setMonth(month);
     h.setFullYear(year);

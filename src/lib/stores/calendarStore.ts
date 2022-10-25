@@ -1,4 +1,4 @@
-import { writable, readable, derived } from "svelte/store";
+import { writable, derived } from "svelte/store";
 
 const today = new Date();
 
