@@ -1,11 +1,13 @@
 <script lang="ts">
     import CalendarCell from "./calendarCell.svelte";
     import DayDetail from "./dayDetail.svelte";
+    import EventForm from "./eventForm.svelte";
     import {
         selectedDayData,
         selectedMonthData,
         selectedMonth,
         selectedDay,
+        eventFormDay
     } from "$lib/stores/calendarStore";
 </script>
 
@@ -25,7 +27,10 @@
         {/each}
     </div>
     {#if $selectedDay}
-        <DayDetail events={$selectedDayData} />
+        <DayDetail day={$selectedDay} events={$selectedDayData} />
+    {/if}
+    {#if $eventFormDay}
+        <EventForm/>
     {/if}
 {:catch error}
     <p>{error}</p>

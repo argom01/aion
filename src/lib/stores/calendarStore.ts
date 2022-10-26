@@ -2,6 +2,7 @@ import type { TEventResponse } from "src/types/event.types";
 import { writable, derived } from "svelte/store";
 
 const today = new Date();
+today.setDate(1);
 
 const createSelectedMonth = () => {
     const { subscribe, update } = writable(today);
@@ -63,7 +64,10 @@ export const selectedMonthData = derived(selectedMonth, ($selectedMonth) => {
 
 export const selectedDayData = derived(
     [selectedMonthData, selectedDay],
-    ([$selectedMonthData, $selectedDay], set: (value: TEventResponse[]) => void) => {
+    (
+        [$selectedMonthData, $selectedDay],
+        set: (value: TEventResponse[]) => void
+    ) => {
         if ($selectedDay) {
             $selectedMonthData
                 .then((e) => set(e[$selectedDay]))
@@ -72,3 +76,13 @@ export const selectedDayData = derived(
     },
     []
 );
+
+const createEventFormDay = () => {
+    const { subscribe, set } = writable<number | null>(null);
+
+    return {
+        subscribe,
+        setDay: (d: number | null) => set(d),
+    };
+};
+export const eventFormDay = createEventFormDay();
