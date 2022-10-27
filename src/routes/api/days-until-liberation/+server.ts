@@ -25,10 +25,7 @@ export const GET: RequestHandler = async () => {
 
     let i = 0;
     let days = 0;
-    const today = new Date();
-    let date = new Date(
-        `${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate()}`
-    );
+    let date = new Date();
     while (i < holidays.length) {
         const holidayDate = new Date(holidays[i][0]);
         if (date < holidayDate) {
