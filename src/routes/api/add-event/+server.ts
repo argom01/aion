@@ -42,7 +42,7 @@ const validateEvent = (e: TAddEventData) => {
 };
 
 function typeCheck(obj: any): obj is TAddEventData {
-    return (obj.beginning !== undefined && obj.title !== undefined && obj.isPeriodical !== undefined);
+    return (obj.beginning && obj.title && obj.isPeriodical);
 }
 
 export const POST: RequestHandler = async ({ request }) => {

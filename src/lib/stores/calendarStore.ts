@@ -42,7 +42,7 @@ export const selectedMonthData = derived(selectedMonth, ($selectedMonth) => {
     const fetchMonthData = async (m: number, y: number) => {
         selectedDay.selectDay(null);
         const response = await fetch(
-            `http://localhost:5173/api/get-events/${m + 1}/${y}`
+            `/api/get-events/${m + 1}/${y}`
         );
 
         if (response.status === 200) {

@@ -15,7 +15,6 @@
     <p>Loading</p>
 {:then days}
     <div
-        class="calendar-board"
         id={`calendar-board_${$selectedMonth.getMonth()}`}
     >
         {#each Object.entries(days) as [day, events]}
