@@ -1,18 +1,23 @@
 <script lang="ts">
     import Calendar from "$lib/components/calendar.svelte";
-    import DaysLeft from "$lib/components/daysLeft.svelte";
-    import { selectedMonth } from "$lib/stores/calendarStore";
+    import { selectedMonth, daysLeft } from "$lib/stores/calendarStore";
 </script>
 
 <svelte:head>
-    <title>Aion</title>
+    {#await $daysLeft}
+        <title>Aion</title>
+    {:then days}
+        <title>Aion - {days}</title>
+    {:catch}
+        <title>Aion</title>
+    {/await}
 </svelte:head>
 
-<header class="flex flex-row bg-black py-4">
-    <div class="flex basis-1/4 items-center justify-center">
+<header class="flex h-[12vh] flex-row  bg-black">
+    <div class="flex basis-1/3 items-center justify-center">
         <button
-            class="rounded-md bg-black p-2.5 text-lg
-            font-light tracking-wider text-white outline outline-2 outline-neutral-500
+            class="rounded-md bg-black p-2.5 font-oswald
+            text-lg font-light tracking-wider text-white outline outline-2 outline-neutral-500
             transition-all duration-500 ease-in-out
             hover:bg-neutral-700"
             on:click={selectedMonth.decrementMonth}
@@ -20,19 +25,19 @@
             Poprzedni miesiąc
         </button>
     </div>
-    <div class="flex basis-1/2 flex-col text-white">
+    <div class="flex basis-1/3 flex-col self-center text-white">
         <h1 class="text-center font-slab text-5xl font-bold tracking-widest">
             Aion
         </h1>
-        <p class="text-center text-xl tracking-widest">
+        <p class="text-center font-oswald text-xl tracking-widest">
             {$selectedMonth.toLocaleString("default", { month: "long" })}
             {$selectedMonth.getFullYear()}
         </p>
     </div>
-    <div class="flex basis-1/4 items-center justify-center">
+    <div class="flex basis-1/3 items-center justify-center">
         <button
-            class="rounded-md bg-black p-2.5 text-lg
-            font-light tracking-wider text-white outline outline-2 outline-neutral-500
+            class="rounded-md bg-black p-2.5 font-oswald
+            text-lg font-light tracking-wider text-white outline outline-2 outline-neutral-500
             transition-all duration-500 ease-in-out
             hover:bg-neutral-700"
             on:click={selectedMonth.incrementMonth}
@@ -41,7 +46,8 @@
         </button>
     </div>
 </header>
-<main>
-    <DaysLeft />
+<main
+    class="flex flex-col items-center bg-gradient-to-b from-black to-[#070707]"
+>
     <Calendar />
 </main>

@@ -1,7 +1,8 @@
 import type { TEventResponse } from "src/types/event.types";
-import { writable, derived } from "svelte/store";
+import { writable, derived, readable } from "svelte/store";
 
 const today = new Date();
+today.setMonth(today.getMonth())
 today.setDate(1);
 
 const createSelectedMonth = () => {
@@ -41,9 +42,7 @@ export const selectedDay = createSelectedDay();
 export const selectedMonthData = derived(selectedMonth, ($selectedMonth) => {
     const fetchMonthData = async (m: number, y: number) => {
         selectedDay.selectDay(null);
-        const response = await fetch(
-            `/api/get-events/${m + 1}/${y}`
-        );
+        const response = await fetch(`http://localhost:5173/api/get-events/${m + 1}/${y}`);
 
         if (response.status === 200) {
             const data: { [k: string]: TEventResponse[] } =
@@ -86,3 +85,24 @@ const createEventFormDay = () => {
     };
 };
 export const eventFormDay = createEventFormDay();
+
+const createDaysLeft = () => {
+    const daysLeft = async () => {
+        const response = await fetch('http://localhost:5173/api/days-until-liberation');
+        if (response.status === 200) {
+            try {
+                const data = await response.json();
+                return data.daysLeft;
+            } catch (error) {
+                throw new Error("Something went wrong");
+            }
+        }
+
+        throw new Error(response.statusText);
+    };
+
+    const { subscribe } = readable(daysLeft());
+
+    return { subscribe };
+};
+export const daysLeft = createDaysLeft();

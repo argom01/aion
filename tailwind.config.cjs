@@ -7,7 +7,8 @@ module.exports = {
         extend: {
             fontFamily: {
                 'sans': ['"Roboto Flex"', ...defaultTheme.fontFamily.sans],
-                'slab': ['"Roboto Slab"']
+                'slab': ['"Roboto Slab"', "serif"],
+                'oswald': ['Oswald', "sans-serif"]
             }
         },
     },

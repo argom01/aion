@@ -10,13 +10,15 @@
     }
 </script>
 
-<div>
-    <button on:click={addEvent}>Add Event</button>
-</div>
-<div class="day-detail-list">
-    {#each events as event}
-        <div id={`day-event_${event.id}`}>
-            <span>{event.title}</span>
-        </div>
-    {/each}
+<div class="w-10/12">
+    <div>
+        <button on:click={addEvent}>Add Event</button>
+    </div>
+    <div class="day-detail-list">
+        {#each events as event}
+            <div class="text-white">
+                <span>{event.title}</span>
+            </div>
+        {/each}
+    </div>
 </div>
