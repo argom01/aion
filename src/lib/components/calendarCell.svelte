@@ -1,21 +1,24 @@
 <script lang="ts">
-    import { selectedDay } from "$lib/stores/calendarStore";
+    import { isCalendarInteractable, selectedDay } from "$lib/stores/calendarStore";
     export let day: number;
     export let busy: boolean = false;
     export let weekDay: number;
 
     function toggleDay() {
-        if ($selectedDay === day) {
-            selectedDay.selectDay(null);
-        } else {
-            selectedDay.selectDay(day);
+    if ($isCalendarInteractable){
+            if ($selectedDay === day) {
+                selectedDay.selectDay(null);
+            } else {
+                selectedDay.selectDay(day);
+            }
         }
     }
 </script>
 
 <div
     style={`grid-column-start: ${weekDay};`}
-    class="flex h-16 flex-col justify-center rounded-md
+    class="cal-cell
+    flex h-16 flex-col justify-center rounded-md
     outline outline-2
     outline-neutral-500
     transition-all duration-500 ease-in-out

@@ -106,3 +106,4 @@ const createDaysLeft = () => {
 };
 export const daysLeft = createDaysLeft();
 
+export const isCalendarInteractable = writable(true);

@@ -2,7 +2,7 @@
     import type { TEventResponse } from "src/types/event.types";
     import { slide } from "svelte/transition";
     import { quadIn, quadOut } from "svelte/easing";
-    import { eventFormDay, selectedMonthData, selectedDay } from "$lib/stores/calendarStore";
+    import { eventFormDay, selectedMonthData, selectedDay, isCalendarInteractable } from "$lib/stores/calendarStore";
     import {
         calendarGridHeight,
         dayDetailListElementHeight,
@@ -21,7 +21,6 @@
     let div;
     let h;
 
-
     // afterUpdate(() => {
     //     div = document.getElementById("chuj");
     //     if (div) {
@@ -31,9 +30,9 @@
 
     function beginScroll(div1) {
         const a = window.innerHeight;
-        div = div1
+        div = div1;
         const addEventButton = document.getElementById("add-event-button");
-        const dayDetailList = div1
+        const dayDetailList = div1;
         const dayDetail = document.getElementById("day-detail-list").firstElementChild;
 
         dayDetailListElementHeight.set(dayDetail.clientHeight);
@@ -48,39 +47,59 @@
                 });
             }
         }, 10);
+
+        return {
+            destroy() {
+                isCalendarInteractable.set(true)
+            }
+        }
     }
     let minH = 100 - ($headerHeight / window.innerHeight) * 100 - ($calendarGridHeight / window.innerHeight) * 100;
 
-    $: {
+    beforeUpdate(() => {
         if ($dayDetailListElementHeight !== 0 && $dayDetailListRemainingHeight !== 0 && div) {
             const calculatedHeight = $dayDetailListRemainingHeight + events.length * $dayDetailListElementHeight;
-            if ((calculatedHeight/window.innerHeight)*100 > minH) {
+            if ((calculatedHeight / window.innerHeight) * 100 > minH) {
                 div.style.height = `${calculatedHeight}px`;
             } else {
                 div.style.height = `${minH}vh`;
             }
         }
-    }
+    });
     function endScroll() {
         clearInterval(interval);
+        isCalendarInteractable.set(true);
+    
+        document.querySelectorAll(".cal-cell").forEach((e) => {
+            (e as HTMLElement).classList.add("hover:bg-neutral-700");
+            (e as HTMLElement).classList.add("hover:cursor-pointer");
+        })    
         // monitorHeight();
+    }
+    function lockButtons() {
+        isCalendarInteractable.set(false);
+        document.querySelectorAll(".cal-cell").forEach((e) => {
+            (e as HTMLElement).classList.remove("hover:bg-neutral-700");
+            (e as HTMLElement).classList.remove("hover:cursor-pointer");
+        })
     }
 </script>
 
 <div
-    in:slide|local={{ duration: 3000, easing: quadOut }}
-    out:slide={{ duration: 1000, easing: quadIn }}
+    in:slide|local={{ duration: 1000, easing: quadOut }}
+    out:slide|local={{ duration: 1000, easing: quadIn }}
     on:introend={endScroll}
+    on:introstart={lockButtons}
+    on:outrostart={lockButtons}
+    on:outroend={() => {
+        isCalendarInteractable.set(true);        
+    }    
+}
     use:beginScroll
-    class="flex justify-center bg-neutral-900  transition-all duration-1000 overflow-hidden"
+    class="flex justify-center overflow-hidden  bg-neutral-900 transition-all duration-[10000ms]"
     id="chuj"
 >
-    <div
-        bind:offsetHeight={h}
-        class="w-10/12"
-        style={`min-height: ${minH}vh;`}
-        id="day-detail-list-wrapper"
-    >
+    <div bind:offsetHeight={h} class="w-10/12" style={`min-height: ${minH}vh;`} id="day-detail-list-wrapper">
         <div id="add-event-button">
             <button on:click={addEvent}>Add Event</button>
         </div>
