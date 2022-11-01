@@ -1,6 +1,7 @@
 <script lang="ts">
     import Calendar from "$lib/components/calendar.svelte";
     import { selectedMonth, daysLeft } from "$lib/stores/calendarStore";
+    import { headerHeight } from '$lib/stores/dimensionStore'
 </script>
 
 <svelte:head>
@@ -13,7 +14,7 @@
     {/await}
 </svelte:head>
 
-<header class="flex h-[12vh] flex-row  bg-black">
+<header bind:offsetHeight={$headerHeight} class="flex h-[12vh] flex-row  bg-black">
     <div class="flex basis-1/3 items-center justify-center">
         <button
             class="rounded-md bg-black p-2.5 font-oswald
@@ -47,7 +48,7 @@
     </div>
 </header>
 <main
-    class="flex flex-col items-center bg-gradient-to-b from-black to-[#070707]"
+    class="flex flex-col items-center bg-black"
 >
     <Calendar />
 </main>

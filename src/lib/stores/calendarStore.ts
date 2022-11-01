@@ -65,15 +65,14 @@ export const selectedDayData = derived(
     [selectedMonthData, selectedDay],
     (
         [$selectedMonthData, $selectedDay],
-        set: (value: TEventResponse[]) => void
     ) => {
         if ($selectedDay) {
-            $selectedMonthData
-                .then((e) => set(e[$selectedDay]))
-                .catch(() => set([]));
+            return $selectedMonthData.then(e => e[$selectedDay]).catch(() => [])
+        } else {
+            return []
         }
-    },
-    []
+
+    }
 );
 
 const createEventFormDay = () => {
@@ -106,3 +105,4 @@ const createDaysLeft = () => {
     return { subscribe };
 };
 export const daysLeft = createDaysLeft();
+

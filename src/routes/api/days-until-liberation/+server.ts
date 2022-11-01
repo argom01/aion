@@ -25,18 +25,11 @@ export const GET: RequestHandler = async () => {
 
     let i = 0;
     let days = 0;
-    const today = new Date();
-    let date = new Date(
-        `${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate()}`
-    );
+    let date = new Date();
+    date.setHours(0, 0, 0, 0)
     while (i < holidays.length) {
         const holidayDate = new Date(holidays[i][0]);
-        if (date < holidayDate) {
-            if (![0, 6].includes(date.getDay())) {
-                days += 1;
-            }
-            date.setDate(date.getDate() + 1);
-        } else if (
+        if (
             date.getMonth() === holidayDate.getMonth() &&
             date.getDate() === holidayDate.getDate()
         ) {
@@ -46,6 +39,11 @@ export const GET: RequestHandler = async () => {
                 date.setDate(date.getDate() + 1);
             }
             i++;
+        } else if (date < holidayDate) {
+            if (![0, 6].includes(date.getDay())) {
+                days += 1;
+            }
+            date.setDate(date.getDate() + 1);
         } else {
             i++;
         }

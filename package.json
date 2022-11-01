@@ -12,7 +12,8 @@
     },
     "prettier": {
         "semi": true,
-        "tabWidth": 4
+        "tabWidth": 4,
+        "printWidth": 120
     },
     "devDependencies": {
         "@sveltejs/adapter-auto": "next",
@@ -40,6 +41,7 @@
     "dependencies": {
         "@prisma/client": "^4.4.0",
         "@sveltestack/svelte-query": "^1.6.0",
-        "dotenv": "^16.0.3"
+        "dotenv": "^16.0.3",
+        "svelte-scrolling": "^1.2.2"
     }
 }

@@ -26,11 +26,7 @@ export const GET: RequestHandler = async ({ params }) => {
     }
 };
 
-const arrangeEvents = (
-    events: TEventResponse[],
-    month: number,
-    year: number
-) => {
+const arrangeEvents = (events: TEventResponse[], month: number, year: number) => {
     const eventsByDay = new Map<number, Array<TEventResponse>>();
     const h = new Date(`${year}-${month + 1}-01`);
     while (h.getMonth() === month) {
@@ -48,11 +44,7 @@ const arrangeEvents = (
     return Object.fromEntries(eventsByDay);
 };
 
-const handlePeriodicEvents = (
-    events: TEventQueryOutput[],
-    month: number,
-    year: number
-) => {
+const handlePeriodicEvents = (events: TEventQueryOutput[], month: number, year: number) => {
     const response: TEventResponse[] = [];
     events.forEach((e) => {
         if (!e.isPeriodical) {
@@ -67,15 +59,9 @@ const handlePeriodicEvents = (
             response.push(event);
         } else {
             const beginning = new Date(e.beginTime);
-            const upperDate = new Date();
-            upperDate.setFullYear(year);
-            upperDate.setMonth(month + 1);
-            upperDate.setDate(1);
+            const upperDate = new Date(`${year}-${month + 2}-01`);
 
-            const lowerDate = new Date();
-            lowerDate.setFullYear(year);
-            lowerDate.setMonth(month);
-            lowerDate.setDate(1);
+            const lowerDate = new Date(`${year}-${month + 1}-01`);
             lowerDate.setHours(0, 0, 0, 0);
 
             const dateBoundary = !e.dateBoundary ? upperDate : e.dateBoundary;
@@ -86,11 +72,7 @@ const handlePeriodicEvents = (
                         const event: TEventResponse = {
                             id: e.id,
                             beginning: new Date(beginning),
-                            ending: !e.endTime
-                                ? null
-                                : new Date(
-                                      e.endTime.setDate(beginning.getDate())
-                                  ),
+                            ending: !e.endTime ? null : new Date(e.endTime.setDate(beginning.getDate())),
                             title: e.title,
                             description: e.description,
                             place: e.place,
