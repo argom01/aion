@@ -2,13 +2,20 @@
     import type { TEventResponse } from "src/types/event.types";
     import { slide } from "svelte/transition";
     import { quadIn, quadOut } from "svelte/easing";
-    import { eventFormDay, selectedMonthData, selectedDay, isCalendarInteractable } from "$lib/stores/calendarStore";
+    import {
+        eventFormDay,
+        flag,
+        selectedMonthData,
+        selectedDay,
+        isCalendarInteractable,
+    } from "$lib/stores/calendarStore";
     import {
         calendarGridHeight,
         dayDetailListElementHeight,
         dayDetailListRemainingHeight,
         headerHeight,
     } from "$lib/stores/dimensionStore";
+    import { tweened } from "svelte/motion";
 
     export let day: number;
     export let events: TEventResponse[] = [];
@@ -16,7 +23,7 @@
     function addEvent() {
         eventFormDay.setDay(day);
     }
-    import { afterUpdate, beforeUpdate, tick } from "svelte";
+    import { afterUpdate, onDestroy, beforeUpdate, tick } from "svelte";
     let interval;
     let div;
     let h;
@@ -50,30 +57,32 @@
 
         return {
             destroy() {
-                isCalendarInteractable.set(true)
-            }
-        }
+                isCalendarInteractable.set(true);
+            },
+        };
     }
     let minH = 100 - ($headerHeight / window.innerHeight) * 100 - ($calendarGridHeight / window.innerHeight) * 100;
 
-    beforeUpdate(() => {
-        if ($dayDetailListElementHeight !== 0 && $dayDetailListRemainingHeight !== 0 && div) {
-            const calculatedHeight = $dayDetailListRemainingHeight + events.length * $dayDetailListElementHeight;
-            if ((calculatedHeight / window.innerHeight) * 100 > minH) {
-                div.style.height = `${calculatedHeight}px`;
-            } else {
-                div.style.height = `${minH}vh`;
-            }
-        }
-    });
+    // beforeUpdate(() => {
+    //     if ($dayDetailListElementHeight !== 0 && $dayDetailListRemainingHeight !== 0 && div) {
+    //     console.log(div.clientHeight, div.offsetHeight, div.scrollHeight)
+    //         const calculatedHeight = $dayDetailListRemainingHeight + events.length * $dayDetailListElementHeight;
+    //         if ((calculatedHeight / window.innerHeight) * 100 > minH) {
+    //             div.style.height = `${calculatedHeight}px`;
+    //         } else {
+    //             div.style.height = `${minH}vh`;
+    //         }
+    //     }
+    //
+    // });
     function endScroll() {
         clearInterval(interval);
         isCalendarInteractable.set(true);
-    
+
         document.querySelectorAll(".cal-cell").forEach((e) => {
             (e as HTMLElement).classList.add("hover:bg-neutral-700");
             (e as HTMLElement).classList.add("hover:cursor-pointer");
-        })    
+        });
         // monitorHeight();
     }
     function lockButtons() {
@@ -81,34 +90,47 @@
         document.querySelectorAll(".cal-cell").forEach((e) => {
             (e as HTMLElement).classList.remove("hover:bg-neutral-700");
             (e as HTMLElement).classList.remove("hover:cursor-pointer");
-        })
+        });
+    }
+
+    const t = tweened(0);
+    $: {
+        if (div) {
+            console.log($t)
+            div.style.height = `${$t}px`;
+        }
+    }
+
+
+    function onUse(e: HTMLElement) {
+        let h = e.clientHeight;
+        const a = window.innerHeight;
+        div = e;
+        const addEventButton = document.getElementById("add-event-button");
+        const dayDetailList = e;
+        const dayDetail = document.getElementById("day-detail-list").firstElementChild;
+
+        dayDetailListElementHeight.set(dayDetail.clientHeight);
+        dayDetailListRemainingHeight.set(dayDetailList.clientHeight - dayDetail.clientHeight * events.length);
+        div.addEventListener("transitioncancel", () => console.log("dupa"));
+
+        t.set(400);
     }
 </script>
 
-<div
-    in:slide|local={{ duration: 1000, easing: quadOut }}
-    out:slide|local={{ duration: 1000, easing: quadIn }}
-    on:introend={endScroll}
-    on:introstart={lockButtons}
-    on:outrostart={lockButtons}
-    on:outroend={() => {
-        isCalendarInteractable.set(true);        
-    }    
-}
-    use:beginScroll
-    class="flex justify-center overflow-hidden  bg-neutral-900 transition-all duration-[10000ms]"
-    id="chuj"
->
+<div use:onUse class="flex justify-center overflow-hidden  bg-neutral-900 transition-all duration-[5000ms]" id="chuj">
     <div bind:offsetHeight={h} class="w-10/12" style={`min-height: ${minH}vh;`} id="day-detail-list-wrapper">
         <div id="add-event-button">
             <button on:click={addEvent}>Add Event</button>
         </div>
         <div id="day-detail-list">
-            {#each events as event}
-                <div class="pt-20 text-white">
-                    <span>{event.title}</span>
-                </div>
-            {/each}
+            {#if $selectedDay}
+                {#each events as event}
+                    <div class="pt-20 text-white">
+                        <span>{event.title}</span>
+                    </div>
+                {/each}
+            {/if}
         </div>
     </div>
 </div>

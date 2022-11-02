@@ -3,7 +3,7 @@
     import CalendarCell from "./calendarCell.svelte";
     import DayDetail from "./dayDetail.svelte";
     import EventForm from "./eventForm.svelte";
-    import { selectedMonthData, selectedMonth, selectedDay, eventFormDay, isCalendarInteractable } from "$lib/stores/calendarStore";
+    import { selectedMonthData,flag, selectedMonth, selectedDay, eventFormDay, isCalendarInteractable } from "$lib/stores/calendarStore";
     import { calendarGridHeight } from "$lib/stores/dimensionStore";
     import { slide } from "svelte/transition";
     import { quadOut, quadIn } from "svelte/easing";
@@ -44,7 +44,7 @@
                 {/each}
             </div>
         </div>
-        {#if $selectedDay}
+        {#if $selectedDay || $flag}
             <DayDetail day={$selectedDay} events={monthData[$selectedDay]} />
         {/if}
         {#if $eventFormDay}

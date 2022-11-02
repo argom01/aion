@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { isCalendarInteractable, selectedDay } from "$lib/stores/calendarStore";
+    import { flag, isCalendarInteractable, selectedDay } from "$lib/stores/calendarStore";
     export let day: number;
     export let busy: boolean = false;
     export let weekDay: number;
@@ -10,6 +10,7 @@
                 selectedDay.selectDay(null);
             } else {
                 selectedDay.selectDay(day);
+                flag.set(true)
             }
         }
     }
