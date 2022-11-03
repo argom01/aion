@@ -42,7 +42,7 @@ const validateEvent = (e: TAddEventData) => {
 };
 
 function typeCheck(obj: any): obj is TAddEventData {
-    return (obj.beginning && obj.title && obj.isPeriodical);
+    return (obj.beginning && obj.title);
 }
 
 export const POST: RequestHandler = async ({ request }) => {
@@ -50,11 +50,11 @@ export const POST: RequestHandler = async ({ request }) => {
         throw error(400, "No request body");
     }
 
-    if (!typeCheck(request.formData)) {
+    const event: TAddEventData | any = await request.json();
+
+    if (!typeCheck(event)) {
         throw error(400, "Missing or invalid data");
     }
-
-    const event: TAddEventData | any = await request.json();
 
     if (!validateEvent(event)) {
         throw error(400, "Missing or invalid data");

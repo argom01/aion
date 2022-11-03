@@ -13,7 +13,7 @@ export const prismaErrorHandler = (
             case "P2025":
                 throw error(404, `Record does not exist:\n ${err.meta}`);
             default:
-                throw error(500, `Internal database error`);
+                throw error(500, `${err.code}`);
         }
     }
 };
