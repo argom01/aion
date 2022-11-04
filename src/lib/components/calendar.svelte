@@ -3,10 +3,8 @@
     import CalendarCell from "./calendarCell.svelte";
     import DayDetail from "./dayDetail.svelte";
     import EventForm from "./eventForm.svelte";
-    import { selectedMonthData,flag, selectedMonth, selectedDay, eventFormDay, isCalendarInteractable } from "$lib/stores/calendarStore";
+    import { selectedMonthData, selectedMonth, selectedDay, eventFormDay } from "$lib/stores/calendarStore";
     import { calendarGridHeight } from "$lib/stores/dimensionStore";
-    import { slide } from "svelte/transition";
-    import { quadOut, quadIn } from "svelte/easing";
 
     const week = () => {
         const a = new Date("2022-10-03");
@@ -44,7 +42,7 @@
                 {/each}
             </div>
         </div>
-        {#if $selectedDay || $flag}
+        {#if $selectedDay}
             <DayDetail day={$selectedDay} events={monthData[$selectedDay]} />
         {/if}
         {#if $eventFormDay}

@@ -29,19 +29,11 @@ const createSelectedMonth = () => {
 };
 export const selectedMonth = createSelectedMonth();
 
-const createSelectedDay = () => {
-    const { subscribe, set } = writable<null | number>(null);
-
-    return {
-        subscribe,
-        selectDay: (d: number | null) => set(d),
-    };
-};
-export const selectedDay = createSelectedDay();
+export const selectedDay = writable<number | null>(null);
 
 export const selectedMonthData = derived(selectedMonth, ($selectedMonth) => {
     const fetchMonthData = async (m: number, y: number) => {
-        selectedDay.selectDay(null);
+        selectedDay.set(null);
         const response = await fetch(`http://localhost:5173/api/get-events/${m + 1}/${y}`);
 
         if (response.status === 200) {
@@ -106,5 +98,3 @@ const createDaysLeft = () => {
 };
 export const daysLeft = createDaysLeft();
 
-export const isCalendarInteractable = writable(true);
-export const flag = writable(false)
