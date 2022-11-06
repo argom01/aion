@@ -6,9 +6,10 @@
     import {
         calendarGridHeight,
         dayDetailListElementHeight,
-        dayDetailListRemainingHeight,
+        addButtonHeight,
         headerHeight,
     } from "$lib/stores/dimensionStore";
+    import { afterUpdate, beforeUpdate, onDestroy } from "svelte";
 
     export let day: number;
     export let events: TEventResponse[] = [];
@@ -20,9 +21,9 @@
     let div: HTMLElement;
     let scroll: any;
 
-    $: if (div && expandingDivHeight !== 0) {
-        div.style.height = `${expandingDivHeight}px`;
-    }
+    // $: if (div && expandingDivHeight !== 0) {
+    //     div.style.height = `${expandingDivHeight}px`;
+    // }
 
     async function scrollDown() {
         scroll = setInterval(() => {
@@ -36,39 +37,118 @@
         }, 10);
     }
 
+    let currentHeight: number;
+    let newHeight: number;
+
+        let didIntroCancel = false;
     function onUse(e: HTMLElement, _l: number) {
         div = e;
 
         const expandingDiv = e;
         const dayDetail = document.getElementById("day-detail-list")!.firstElementChild;
+        const addButton = document.getElementById("add-event-button");
         if (!dayDetail) {
             selectedDay.set(null);
         }
 
         dayDetailListElementHeight.set(dayDetail!.clientHeight);
-        dayDetailListRemainingHeight.set(expandingDiv.clientHeight - dayDetail!.clientHeight * events.length);
+        addButtonHeight.set(addButton!.clientHeight);
 
-        div.style.height = `${e.clientHeight}px`;
+        // div.style.height = `${e.clientHeight}px`;
         div.addEventListener("transitionend", () => {
             clearInterval(scroll);
-            window.scrollTo({
-                top: document.body.scrollHeight,
-                left: 0,
-                behavior: "smooth"
-            })
+            if (document.body.scrollHeight / window.innerHeight < 1.5) {
+                window.scrollTo({
+                    top: document.body.scrollHeight,
+                    behavior: "smooth",
+                });
+            }
         });
-        div.addEventListener("transitioncancel", () => clearInterval(scroll));
-        div.addEventListener("animationcancel", () => clearInterval(scroll));
+        div.addEventListener("transitioncancel", () => {
+            console.log("dupa");
+        });
+        div.addEventListener("animationcancel", () => {
+            console.log("cipsko")
+            if (document.body.scrollHeight / window.innerHeight < 1.5) {
+                window.scrollTo({
+                    top: document.body.scrollHeight,
+                    behavior: "smooth",
+                });
+            }
+            // window.scrollBy({
+            //     top: 10,
+            //     behavior: "smooth",
+            // });
+        });
+        div.addEventListener("animationend", () => {
+            console.log("chuj");
+        });
         div.addEventListener("transitionstart", () => scrollDown());
+        currentHeight = e.clientHeight;
 
+        beforeUpdate(() => {
+            if (div) {
+                document.body.style.height = document.body.clientHeight + "px";
+            }
+        });
+
+        let transition: any;
         return {
             update(l: number) {
-                const calculatedHeight = $dayDetailListRemainingHeight + l * $dayDetailListElementHeight;
+                const calculatedHeight = $addButtonHeight + l * $dayDetailListElementHeight;
                 if ((calculatedHeight / window.innerHeight) * 100 > minH) {
                     expandingDivHeight = calculatedHeight;
                 } else {
                     expandingDivHeight = (minH * window.innerHeight) / 100;
                 }
+
+                if (e.style.animationPlayState === "running") {
+                    document.body.style.height = "";
+                    return 
+                }
+
+                console.log(transition);
+                if (transition ) {
+                    transition.cancel();
+                    document.body.style.height = "";
+                    newHeight = e.clientHeight;
+                    currentHeight = newHeight;
+                    if (document.body.scrollHeight / window.innerHeight < 1.5) {
+                        window.scrollTo({
+                            top: document.body.scrollHeight,
+                            behavior: "smooth",
+                        });
+                    }
+                    return;
+                }
+                newHeight = e.clientHeight;
+                console.log(currentHeight, newHeight);
+                scrollDown();
+                transition = e.animate(
+                    [
+                        {
+                            height: currentHeight + "px",
+                            overflow: "hidden",
+                        },
+                        {
+                            height: newHeight + "px",
+                            overflow: "hidden",
+                        },
+                    ],
+                    { duration: 3000 }
+                );
+                document.body.style.height = "";
+                transition.onfinish = () => {
+                    console.log("transition finished");
+                    clearInterval(scroll);
+                    transition = undefined;
+                };
+                transition.oncancel = () => {
+                    console.log("transition canceled");
+                    clearInterval(scroll);
+                    transition = undefined;
+                };
+                currentHeight = newHeight;
             },
         };
     }
@@ -76,11 +156,16 @@
 
 <div
     use:onUse={events.length}
-    in:slide={{duration: 1500, easing: quadOut}}
-    out:slide={{duration: 1500, easing: quadIn}}
+    in:slide={{ duration: 1500, easing: quadOut }}
+    out:slide={{ duration: 1500, easing: quadIn }}
     on:introstart={() => scrollDown()}
-    on:introend={() => clearInterval(scroll)}
-    class="flex justify-center overflow-hidden bg-neutral-900  transition-all duration-800 ease-in"
+    on:introend={() => {
+        clearInterval(scroll);
+    }}
+    on:outrostart={() => {
+        document.body.style.height = "";
+    }}
+    class="flex justify-center overflow-hidden  bg-neutral-900 "
     id="expanding-div"
 >
     <div class="w-10/12" style={`min-height: ${minH}vh;`} id="day-detail-list-wrapper">
