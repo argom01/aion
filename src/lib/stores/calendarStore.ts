@@ -2,8 +2,8 @@ import type { TEventResponse } from "src/types/event.types";
 import { writable, derived, readable } from "svelte/store";
 
 const today = new Date();
-today.setMonth(today.getMonth())
 today.setDate(1);
+today.setMonth(today.getMonth());
 
 const createSelectedMonth = () => {
     const { subscribe, update } = writable(today);
@@ -37,8 +37,7 @@ export const selectedMonthData = derived(selectedMonth, ($selectedMonth) => {
         const response = await fetch(`http://localhost:5173/api/get-events/${m + 1}/${y}`);
 
         if (response.status === 200) {
-            const data: { [k: string]: TEventResponse[] } =
-                await response.json();
+            const data: { [k: string]: TEventResponse[] } = await response.json();
             today.setMonth(m);
             today.setFullYear(y);
             return data;
@@ -47,23 +46,17 @@ export const selectedMonthData = derived(selectedMonth, ($selectedMonth) => {
         }
     };
 
-    return fetchMonthData(
-        $selectedMonth.getMonth(),
-        $selectedMonth.getFullYear()
-    );
+    return fetchMonthData($selectedMonth.getMonth(), $selectedMonth.getFullYear());
 });
 
 export const selectedDayData = derived(
     [selectedMonthData, selectedDay],
-    (
-        [$selectedMonthData, $selectedDay],
-    ) => {
+    ([$selectedMonthData, $selectedDay]) => {
         if ($selectedDay) {
-            return $selectedMonthData.then(e => e[$selectedDay]).catch(() => [])
+            return $selectedMonthData.then((e) => e[$selectedDay]).catch(() => []);
         } else {
-            return []
+            return [];
         }
-
     }
 );
 
@@ -79,7 +72,7 @@ export const eventFormDay = createEventFormDay();
 
 const createDaysLeft = () => {
     const daysLeft = async () => {
-        const response = await fetch('http://localhost:5173/api/days-until-liberation');
+        const response = await fetch("http://localhost:5173/api/days-until-liberation");
         if (response.status === 200) {
             try {
                 const data = await response.json();
@@ -97,4 +90,3 @@ const createDaysLeft = () => {
     return { subscribe };
 };
 export const daysLeft = createDaysLeft();
-

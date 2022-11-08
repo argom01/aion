@@ -2,14 +2,7 @@
     import type { TEventResponse } from "src/types/event.types";
     import { slide } from "svelte/transition";
     import { quadIn, quadOut } from "svelte/easing";
-    import { eventFormDay, selectedDay } from "$lib/stores/calendarStore";
-    import {
-        calendarGridHeight,
-        dayDetailListElementHeight,
-        addButtonHeight,
-        headerHeight,
-    } from "$lib/stores/dimensionStore";
-    import { afterUpdate, beforeUpdate, onDestroy } from "svelte";
+    import { calendarGridHeight, headerHeight } from "$lib/stores/dimensionStore";
 
     export let day: number;
     export let events: TEventResponse[] = [];
@@ -27,8 +20,9 @@
                     top: document.body.scrollHeight,
                     behavior: "smooth",
                 });
+                console.log("scroll");
             }
-        }, 10);
+        }, 50);
     }
 
     let currentHeight: number;
@@ -36,21 +30,6 @@
 
     function onUse(e: HTMLElement, _l: number) {
         div = e;
-
-        const dayDetail = document.getElementById("day-detail-list")!.firstElementChild;
-        const addButton = document.getElementById("add-event-button");
-        if (!dayDetail) {
-            selectedDay.set(null);
-        }
-
-        dayDetailListElementHeight.set(dayDetail!.clientHeight);
-        addButtonHeight.set(addButton!.clientHeight);
-
-        beforeUpdate(() => {
-            if (div) {
-                document.body.style.height = document.body.clientHeight + "px";
-            }
-        });
 
         currentHeight = e.clientHeight;
 
