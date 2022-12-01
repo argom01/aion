@@ -41,9 +41,7 @@
     "dependencies": {
         "@prisma/client": "^4.7.0",
         "@sveltestack/svelte-query": "^1.6.0",
-        "class-transformer": "^0.5.1",
         "dotenv": "^16.0.3",
-        "reflect-metadata": "^0.1.13",
         "superjson": "^1.11.0",
         "svelte-scrolling": "^1.2.2"
     }

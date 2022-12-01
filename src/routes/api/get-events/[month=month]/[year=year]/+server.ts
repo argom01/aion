@@ -1,8 +1,8 @@
 import type { RequestHandler } from "@sveltejs/kit";
 import type { TEventQueryOutput, TEventResponse } from "src/types/event.types";
 
-import { error, json } from "@sveltejs/kit";
-import superjson from 'superjson';
+import { error } from "@sveltejs/kit";
+import superjson from "superjson";
 import prisma from "$lib/prisma";
 import { prismaErrorHandler } from "$lib/prismaErrorHandler";
 

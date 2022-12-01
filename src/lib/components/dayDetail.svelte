@@ -3,6 +3,7 @@
     import { slide } from "svelte/transition";
     import { quadIn, quadOut } from "svelte/easing";
     import { calendarGridHeight, headerHeight } from "$lib/stores/dimensionStore";
+    import { beforeUpdate } from "svelte";
 
     export let day: number;
     export let events: TEventResponse[] = [];
@@ -30,6 +31,12 @@
 
     function onUse(e: HTMLElement, _l: number) {
         div = e;
+        beforeUpdate(() => {
+            if (div) {
+                document.body.style.height = document.body.clientHeight + "px";
+                console.log(document.body.clientHeight);
+            }
+        });
 
         currentHeight = e.clientHeight;
 
@@ -70,7 +77,6 @@
                         });
                     }
                     return;
-
                 }
                 newHeight = e.clientHeight;
                 scrollDown();
@@ -88,6 +94,7 @@
                     { duration: 1000, easing: "ease-out" }
                 );
                 document.body.style.height = "";
+                console.log("chuj");
                 transition.onfinish = () => {
                     console.log("transition finished");
                     clearInterval(scroll);
@@ -108,7 +115,10 @@
     use:onUse={events.length}
     in:slide={{ duration: 1500, easing: quadOut }}
     out:slide={{ duration: 1500, easing: quadIn }}
-    on:introstart={() => scrollDown()}
+    on:introstart={() => {
+        scrollDown();
+        document.body.style.height = "";
+    }}
     on:introend={() => {
         clearInterval(scroll);
     }}
