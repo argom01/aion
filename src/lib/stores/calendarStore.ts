@@ -1,5 +1,6 @@
 import type { TEventResponse } from "src/types/event.types";
 import { writable, derived, readable } from "svelte/store";
+import superjson from 'superjson';
 
 const today = new Date();
 today.setDate(1);
@@ -37,7 +38,8 @@ export const selectedMonthData = derived(selectedMonth, ($selectedMonth) => {
         const response = await fetch(`http://localhost:5173/api/get-events/${m + 1}/${y}`);
 
         if (response.status === 200) {
-            const data: { [k: string]: TEventResponse[] } = await response.json();
+            const responseSuperJSON = await response.text();
+            const data = superjson.parse<{[k: string]: TEventResponse[]}>(responseSuperJSON);
             today.setMonth(m);
             today.setFullYear(y);
             return data;

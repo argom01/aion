@@ -2,6 +2,7 @@ import type { RequestHandler } from "@sveltejs/kit";
 import type { TEventQueryOutput, TEventResponse } from "src/types/event.types";
 
 import { error, json } from "@sveltejs/kit";
+import superjson from 'superjson';
 import prisma from "$lib/prisma";
 import { prismaErrorHandler } from "$lib/prismaErrorHandler";
 
@@ -19,7 +20,7 @@ export const GET: RequestHandler = async ({ params }) => {
         const handledEvents = handlePeriodicEvents(events, month - 1, year);
         const responseBody = arrangeEvents(handledEvents, month - 1, year);
 
-        return json(responseBody);
+        return new Response(superjson.stringify(responseBody));
     } catch (e) {
         prismaErrorHandler(e);
         throw error(500);

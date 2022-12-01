@@ -70,6 +70,7 @@
                         });
                     }
                     return;
+
                 }
                 newHeight = e.clientHeight;
                 scrollDown();
@@ -124,7 +125,10 @@
         <div id="day-detail-list">
             {#each events as event}
                 <div class="pt-20 text-white">
-                    <span>{event.title}</span>
+                    <div>
+                        <p>{event.title}</p>
+                        <p>{event.beginning.toTimeString()}</p>
+                    </div>
                 </div>
             {/each}
         </div>
