@@ -8,10 +8,12 @@
     export let day: number;
     export let events: TEventResponse[] = [];
 
+    const isEventDetailDisplayed: boolean[] = [];
+    events.forEach(() => isEventDetailDisplayed.push(false));
+
     let minH =
         100 - ($headerHeight / window.innerHeight) * 100 - ($calendarGridHeight / window.innerHeight) * 100;
 
-    let div: HTMLElement;
     let scroll: any;
 
     async function scrollDown() {
@@ -30,12 +32,8 @@
     let newHeight: number;
 
     function onUse(e: HTMLElement, _l: number) {
-        div = e;
         beforeUpdate(() => {
-            if (div) {
-                document.body.style.height = document.body.clientHeight + "px";
-                console.log(document.body.clientHeight);
-            }
+            document.body.style.height = document.body.clientHeight + "px";
         });
 
         currentHeight = e.clientHeight;
@@ -109,6 +107,11 @@
             },
         };
     }
+
+    const toggleEventDetail = (idx: number) => {
+        console.log(idx)
+        isEventDetailDisplayed[idx] = !isEventDetailDisplayed[idx];
+    }
 </script>
 
 <div
@@ -133,12 +136,25 @@
             <button on:click={() => {}}>Add Event</button>
         </div>
         <div id="day-detail-list">
-            {#each events as event}
-                <div class="pt-20 text-white">
+            {#each events as event, idx}
+                <div on:click={() => toggleEventDetail(idx)} on:keydown={() => toggleEventDetail(idx)} class="pt-20 text-white">
+                    {#if !isEventDetailDisplayed[idx]}
                     <div>
                         <p>{event.title}</p>
-                        <p>{event.beginning.toTimeString()}</p>
+                        <p>{event.beginning.getHours()}:{event.beginning.getMinutes()}</p>
                     </div>
+                    {:else}
+                    <div>
+                        <p>{event.title}</p>
+                        <p>
+                            {event.beginning.getHours()}:{event.beginning.getMinutes()}
+                            {#if event.ending}
+                                -{event.ending.getHours()}:{event.ending.getMinutes()}
+                            {/if}
+                        </p>
+                        <p>Cipsko</p>
+                    </div>
+                    {/if}
                 </div>
             {/each}
         </div>

@@ -60,14 +60,17 @@ const handlePeriodicEvents = (events: TEventQueryOutput[], month: number, year: 
             response.push(event);
         } else {
             const beginning = new Date(e.beginTime);
-            const upperDate = new Date(`${year}-${month + 2}-01`);
+            const upperDate = new Date();
+            upperDate.setDate(1);
+            upperDate.setFullYear(year);
+            upperDate.setMonth(month+1);
 
             const lowerDate = new Date(`${year}-${month + 1}-01`);
             lowerDate.setHours(0, 0, 0, 0);
 
             const dateBoundary = !e.dateBoundary ? upperDate : e.dateBoundary;
 
-            if (dateBoundary >= upperDate) {
+            if (dateBoundary >= lowerDate) {
                 while (beginning <= dateBoundary && beginning < upperDate) {
                     if (beginning >= lowerDate) {
                         const event: TEventResponse = {
