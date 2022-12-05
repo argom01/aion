@@ -26,7 +26,7 @@
     on:keydown={toggleDay}
     on:click={toggleDay}
 >
-    <p class="basis-3/5 pt-1.5 text-center font-oswald text-lg font-normal tracking-wider text-white">
+    <p class="basis-3/5 pt-1.5 text-center text-lg font-normal tracking-wider text-white">
         {day}
     </p>
     <div class="flex basis-2/5 justify-center pt-0.5">

@@ -26,13 +26,10 @@ export const GET: RequestHandler = async () => {
     let i = 0;
     let days = 0;
     let date = new Date();
-    date.setHours(0, 0, 0, 0)
+    date.setHours(0, 0, 0, 0);
     while (i < holidays.length) {
         const holidayDate = new Date(holidays[i][0]);
-        if (
-            date.getMonth() === holidayDate.getMonth() &&
-            date.getDate() === holidayDate.getDate()
-        ) {
+        if (date.getMonth() === holidayDate.getMonth() && date.getDate() === holidayDate.getDate()) {
             if (holidays[i][1]) {
                 date = new Date(holidays[i + 1][0]);
             } else {

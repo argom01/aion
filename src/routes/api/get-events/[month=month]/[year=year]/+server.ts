@@ -14,7 +14,8 @@ export const GET: RequestHandler = async ({ params }) => {
         const events: TEventQueryOutput[] = await prisma.$queryRaw`
         SELECT * FROM "Event"
         WHERE ('isPeriodical' = 'yes') OR
-        (date_part('month', "beginTime") = ${month} AND date_part('year', "beginTime") = ${year});
+        (date_part('month', "beginTime") = ${month} AND date_part('year', "beginTime") = ${year})
+        ORDER BY cast("beginTime" as time);
         `;
 
         const handledEvents = handlePeriodicEvents(events, month - 1, year);
@@ -63,7 +64,7 @@ const handlePeriodicEvents = (events: TEventQueryOutput[], month: number, year: 
             const upperDate = new Date();
             upperDate.setDate(1);
             upperDate.setFullYear(year);
-            upperDate.setMonth(month+1);
+            upperDate.setMonth(month + 1);
 
             const lowerDate = new Date(`${year}-${month + 1}-01`);
             lowerDate.setHours(0, 0, 0, 0);

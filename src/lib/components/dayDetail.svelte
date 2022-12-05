@@ -1,5 +1,7 @@
 <script lang="ts">
     import type { TEventResponse } from "src/types/event.types";
+
+    import EventDetail from "./eventDetail.svelte";
     import { slide } from "svelte/transition";
     import { quadIn, quadOut } from "svelte/easing";
     import { calendarGridHeight, headerHeight } from "$lib/stores/dimensionStore";
@@ -7,9 +9,6 @@
 
     export let day: number;
     export let events: TEventResponse[] = [];
-
-    const isEventDetailDisplayed: boolean[] = [];
-    events.forEach(() => isEventDetailDisplayed.push(false));
 
     let minH =
         100 - ($headerHeight / window.innerHeight) * 100 - ($calendarGridHeight / window.innerHeight) * 100;
@@ -34,6 +33,7 @@
     function onUse(e: HTMLElement, _l: number) {
         beforeUpdate(() => {
             document.body.style.height = document.body.clientHeight + "px";
+            currentHeight = e.clientHeight;
         });
 
         currentHeight = e.clientHeight;
@@ -77,7 +77,9 @@
                     return;
                 }
                 newHeight = e.clientHeight;
-                scrollDown();
+                if (newHeight > currentHeight) {
+                    scrollDown();
+                }
                 transition = e.animate(
                     [
                         {
@@ -92,7 +94,6 @@
                     { duration: 1000, easing: "ease-out" }
                 );
                 document.body.style.height = "";
-                console.log("chuj");
                 transition.onfinish = () => {
                     console.log("transition finished");
                     clearInterval(scroll);
@@ -107,17 +108,12 @@
             },
         };
     }
-
-    const toggleEventDetail = (idx: number) => {
-        console.log(idx)
-        isEventDetailDisplayed[idx] = !isEventDetailDisplayed[idx];
-    }
 </script>
 
 <div
     use:onUse={events.length}
-    in:slide={{ duration: 1500, easing: quadOut }}
-    out:slide={{ duration: 1500, easing: quadIn }}
+    in:slide|local={{ duration: 1500, easing: quadOut }}
+    out:slide|local={{ duration: 1500, easing: quadIn }}
     on:introstart={() => {
         scrollDown();
         document.body.style.height = "";
@@ -128,34 +124,25 @@
     on:outrostart={() => {
         document.body.style.height = "";
     }}
-    class="flex justify-center overflow-hidden bg-neutral-900"
+    class="flex justify-center overflow-hidden bg-gradient-to-b from-[#101010] to-black"
     id="expanding-div"
 >
-    <div class="w-10/12" style={`min-height: ${minH}vh;`} id="day-detail-list-wrapper">
-        <div id="add-event-button">
-            <button on:click={() => {}}>Add Event</button>
+    <div
+        class="flex w-full flex-col items-center"
+        style={`min-height: ${minH}vh;`}
+        id="day-detail-list-wrapper"
+    >
+        <div id="add-event-button" class="w-full">
+            <button
+                on:click={() => {}}
+                class="transition-color w-full py-2 text-center text-2xl font-light tracking-wider text-white 
+                duration-500 ease-in-out hover:bg-neutral-800"
+                >&#43;</button
+            >
         </div>
-        <div id="day-detail-list">
-            {#each events as event, idx}
-                <div on:click={() => toggleEventDetail(idx)} on:keydown={() => toggleEventDetail(idx)} class="pt-20 text-white">
-                    {#if !isEventDetailDisplayed[idx]}
-                    <div>
-                        <p>{event.title}</p>
-                        <p>{event.beginning.getHours()}:{event.beginning.getMinutes()}</p>
-                    </div>
-                    {:else}
-                    <div>
-                        <p>{event.title}</p>
-                        <p>
-                            {event.beginning.getHours()}:{event.beginning.getMinutes()}
-                            {#if event.ending}
-                                -{event.ending.getHours()}:{event.ending.getMinutes()}
-                            {/if}
-                        </p>
-                        <p>Cipsko</p>
-                    </div>
-                    {/if}
-                </div>
+        <div id="day-detail-list" class="w-10/12 divide-y-2 divide-solid divide-neutral-800">
+            {#each events as event (event.beginning)}
+                <EventDetail {event} />
             {/each}
         </div>
     </div>
