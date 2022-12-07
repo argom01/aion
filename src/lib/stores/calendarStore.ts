@@ -2,12 +2,14 @@ import type { TEventResponse } from "src/types/event.types";
 import { writable, derived, readable } from "svelte/store";
 import superjson from 'superjson';
 
-const today = new Date();
-today.setDate(1);
-today.setMonth(today.getMonth());
+export const today = readable(new Date());
+
+const currentMonth = new Date();
+currentMonth.setDate(1);
+currentMonth.setMonth(currentMonth.getMonth());
 
 const createSelectedMonth = () => {
-    const { subscribe, update } = writable(today);
+    const { subscribe, update } = writable(currentMonth);
     return {
         subscribe,
         selectMonth: (m: number, y: number) =>
@@ -40,8 +42,6 @@ export const selectedMonthData = derived(selectedMonth, ($selectedMonth) => {
         if (response.status === 200) {
             const responseSuperJSON = await response.text();
             const data = superjson.parse<{[k: string]: TEventResponse[]}>(responseSuperJSON);
-            today.setMonth(m);
-            today.setFullYear(y);
             return data;
         } else {
             throw new Error(response.statusText);
@@ -50,17 +50,6 @@ export const selectedMonthData = derived(selectedMonth, ($selectedMonth) => {
 
     return fetchMonthData($selectedMonth.getMonth(), $selectedMonth.getFullYear());
 });
-
-export const selectedDayData = derived(
-    [selectedMonthData, selectedDay],
-    ([$selectedMonthData, $selectedDay]) => {
-        if ($selectedDay) {
-            return $selectedMonthData.then((e) => e[$selectedDay]).catch(() => []);
-        } else {
-            return [];
-        }
-    }
-);
 
 const createEventFormDay = () => {
     const { subscribe, set } = writable<number | null>(null);

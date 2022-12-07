@@ -19,8 +19,8 @@
         <button
             class="transition-color rounded-md bg-black p-2.5
             font-oswald text-lg font-light tracking-wider text-white outline outline-2
-            outline-neutral-500 duration-500 ease-in-out
-            hover:bg-neutral-700"
+            outline-neutral-700 duration-500 ease-in-out
+            hover:bg-neutral-800"
             on:click={selectedMonth.decrementMonth}
         >
             Poprzedni miesiąc
@@ -37,8 +37,8 @@
         <button
             class="transition-color rounded-md bg-black p-2.5
             font-oswald text-lg font-light tracking-wider text-white outline outline-2
-            outline-neutral-500 duration-500 ease-in-out
-            hover:bg-neutral-700"
+            outline-neutral-700 duration-500 ease-in-out
+            hover:bg-neutral-800"
             on:click={selectedMonth.incrementMonth}
         >
             Następny miesiąc

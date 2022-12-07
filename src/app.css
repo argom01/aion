@@ -6,6 +6,10 @@
     font-family: 'Oswald', 'sans-serif';
 }
 
+#cal-cells-grid > div:last-child {
+    border-style: none;
+}
+
 body::-webkit-scrollbar {
     display: none;
 }

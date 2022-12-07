@@ -24,15 +24,17 @@
     </div>
 {:then monthData}
     <div class="min-h-[88vh] w-full">
-        <div class="flex items-start justify-center" bind:offsetHeight={$calendarGridHeight}>
-            <div class="grid grid-cols-7 gap-y-6 gap-x-8 px-32 w-10/12 py-12">
+        <div class="flex flex-col items-center justify-center py-12" bind:offsetHeight={$calendarGridHeight}>
+            <div class="grid grid-cols-7 w-10/12 px-24 ">
                 {#each week() as weekDay}
-                    <div class="pb-2">
+                    <div class="pb-8">
                         <p class="text-white text-center tracking-wider text-lg font-light font-oswald">
                             {weekDay}
                         </p>
                     </div>
                 {/each}
+            </div>
+            <div class="grid grid-cols-7 px-24 w-10/12 ">
                 {#each Object.entries(monthData) as [day, events]}
                     <CalendarCell
                         day={parseInt(day)}

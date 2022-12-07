@@ -30,12 +30,17 @@
     let currentHeight: number;
     let newHeight: number;
 
-    function onUse(e: HTMLElement, _l: number) {
-        beforeUpdate(() => {
-            document.body.style.height = document.body.clientHeight + "px";
-            currentHeight = e.clientHeight;
-        });
+    let div: any;
 
+    beforeUpdate(() => {
+        if (div && div.style.animationPlayState !== "running") {
+            document.body.style.height = document.body.clientHeight + "px";
+            currentHeight = div.clientHeight;
+        }
+    });
+
+    function onUse(e: HTMLElement, _l: number) {
+        div = e;
         currentHeight = e.clientHeight;
 
         let transition: any;
@@ -119,6 +124,7 @@
         document.body.style.height = "";
     }}
     on:introend={() => {
+        document.body.style.height = "";
         clearInterval(scroll);
     }}
     on:outrostart={() => {
@@ -136,8 +142,7 @@
             <button
                 on:click={() => {}}
                 class="transition-color w-full py-2 text-center text-2xl font-light tracking-wider text-white 
-                duration-500 ease-in-out hover:bg-neutral-800"
-                >&#43;</button
+                duration-500 ease-in-out hover:bg-neutral-800">&#43;</button
             >
         </div>
         <div id="day-detail-list" class="w-10/12 divide-y-2 divide-solid divide-neutral-800">
